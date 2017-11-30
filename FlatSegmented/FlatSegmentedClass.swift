@@ -23,52 +23,49 @@ public class FlatSegmented:UIControl{
     var segments = [UIButton]()
     var underline = UIView()
     var underlineHorizontalConstraint = NSLayoutConstraint()
-    var underlineVerticalConstraint = NSLayoutConstraint()
-    var underlineHeightConstraint = NSLayoutConstraint()
-    var underlineWidthConstraint = NSLayoutConstraint()
-    
+   
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder:aDecoder)!
     }
-    
     
     public func makeSegment(){
         guard let values = self.values as [String]?  else { return }
         
         for (index,value) in values.enumerated() {
-            
-            let button = UIButton()
-            var horizontalConstraint:NSLayoutConstraint
-            
-            if index == 0 {
-                horizontalConstraint = NSLayoutConstraint(item: button, attribute: .leading, relatedBy: .equal, toItem: self, attribute: .leading, multiplier: 1, constant: 0)
-            }
-            else
-            {
-                horizontalConstraint = NSLayoutConstraint(item: button, attribute: .leading, relatedBy: .equal, toItem: segments[index - 1 ], attribute: .trailing, multiplier: 1, constant: 0)
-            }
-            
-            
-            let verticalConstraint = NSLayoutConstraint(item: button, attribute: .top, relatedBy: .equal, toItem: self, attribute: .top, multiplier: 1, constant: 0)
-            
-            let wMultiplier = (Double(Double(1) / Double(values.count)))
-            let widthConstraint = NSLayoutConstraint(item: button, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: CGFloat(wMultiplier), constant: 0)
-            
-            let heightConstraint = NSLayoutConstraint(item: button, attribute: .height, relatedBy: .equal, toItem: self, attribute: .height, multiplier: 1, constant: 0)
-            
-            button.setTitle(value, for: .normal)
-            button.contentHorizontalAlignment = .center
-            button.contentVerticalAlignment = .center
-            button.setTitleColor(textColor, for: .normal)
-            
-            button.tag = index
+
+
+            let button:UIButton = {
+               let button = UIButton()
+                var leadingControl:NSLayoutAnchor<NSLayoutXAxisAnchor>?
+                button.translatesAutoresizingMaskIntoConstraints = false
+                self.addSubview(button)
+                if index == 0
+                {
+                    leadingControl = self.leadingAnchor
+                }
+                else
+                {
+                    leadingControl = segments[index - 1 ].trailingAnchor
+                }
+                let wMultiplier = (CGFloat(Double(1) / Double(values.count)))
+                
+                button.leadingAnchor.constraint(equalTo: leadingControl!).isActive = true
+                button.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+                button.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: wMultiplier).isActive = true
+                button.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+                
+                button.setTitle(value, for: .normal)
+                button.contentHorizontalAlignment = .center
+                button.contentVerticalAlignment = .center
+                button.setTitleColor(textColor, for: .normal)
+                
+                button.tag = index
+                return button
+            }()
+    
             segments.append(button)
-            button.translatesAutoresizingMaskIntoConstraints = false
             button.addTarget(self, action: #selector(buttonAction(sender:)), for: .touchUpInside)
-            self.addSubview(button)
-            self.addConstraints(
-                [horizontalConstraint,verticalConstraint,widthConstraint,heightConstraint]
-            )
+
         }
         addUnderlineForFirstSegment()
     }
@@ -81,35 +78,33 @@ public class FlatSegmented:UIControl{
         
         let x = defaultValue
         
-        underlineHorizontalConstraint = NSLayoutConstraint(item: underline, attribute: .leading, relatedBy: .equal, toItem: segments[x], attribute: .leading, multiplier: 1, constant: 0)
+        underline.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(underline)
+
+        //Constraints
+        underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: segments[x].leadingAnchor)
+        underlineHorizontalConstraint.isActive = true
         
-        underlineVerticalConstraint = NSLayoutConstraint(item: underline, attribute: .bottom, relatedBy: .equal, toItem: self, attribute: .bottom, multiplier: 1, constant: 0)
+        underline.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         
         let multiplier = CGFloat(1 / CGFloat(values!.count))
         
-        underlineWidthConstraint = NSLayoutConstraint(item: underline, attribute: .width, relatedBy: .equal, toItem: self, attribute: .width, multiplier: multiplier  , constant: 0)
-        
-        underlineHeightConstraint = NSLayoutConstraint(item: underline, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1, constant: underlineWeight)
-        
+        underline.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: multiplier).isActive = true
+
+        underline.heightAnchor.constraint(equalToConstant: underlineWeight).isActive = true
+
         underline.backgroundColor = underlineColor
-        underline.translatesAutoresizingMaskIntoConstraints = false
         
         let selectedButton = segments[defaultValue]
         selectedButton.setTitleColor(selectedTextColor, for: .normal)
         
-        self.addSubview(underline)
-        self.addConstraints([
-            underlineHorizontalConstraint,underlineVerticalConstraint
-            ,underlineWidthConstraint,underlineHeightConstraint
-            ])
     }
     
     func changeUnderlinePosition(button:UIButton){
         let x  = button.tag
-        
-        self.removeConstraint(underlineHorizontalConstraint)
-        underlineHorizontalConstraint = NSLayoutConstraint(item: underline, attribute: .leading, relatedBy: .equal, toItem: segments[x], attribute: .leading, multiplier: 1, constant: 0)
-        self.addConstraint(underlineHorizontalConstraint)
+        underlineHorizontalConstraint.isActive = false
+        underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: segments[x].leadingAnchor)
+        underlineHorizontalConstraint.isActive = true
         
         UIView.animate(withDuration: 0.1, animations: {
             self.layoutIfNeeded()
@@ -122,12 +117,8 @@ public class FlatSegmented:UIControl{
         self.sendActions(for: .valueChanged)
         
         guard selectedTextColor != nil else{ return }
-        for segment in segments {
-            segment.setTitleColor(textColor, for: .normal)
-        }
+        segments.forEach{   $0.setTitleColor(textColor, for: .normal)   }
         sender.setTitleColor(selectedTextColor, for: .normal)
-        
-        
     }
     
     
