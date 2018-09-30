@@ -1,16 +1,14 @@
 //
-//  customSegmented.swift
-//  GotLikes
 //
 //  Created by sameh on 7/16/17.
-//  Copyright © 2017 Atiaf. All rights reserved.
+//  Copyright © 2017 Sameh Sayed. All rights reserved.
 //
 
 import Foundation
 import UIKit
 
-public class FlatSegmented:UIControl{
-    
+public class FlatSegmented:UIControl
+{
     public var selectedValue = 0
     public var defaultValue:Int = 0
     public var underlineWeight:CGFloat = 1
@@ -18,8 +16,9 @@ public class FlatSegmented:UIControl{
     public var textColor:UIColor = UIColor.black
     public var underlineColor:UIColor = UIColor.blue
     public var selectedTextColor:UIColor?
-    
-    
+    public var font:UIFont?
+    public var allowUnderline = true
+
     var segments = [UIButton]()
     var underline = UIView()
     var underlineHorizontalConstraint = NSLayoutConstraint()
@@ -31,10 +30,10 @@ public class FlatSegmented:UIControl{
     public func makeSegment(){
         guard let values = self.values as [String]?  else { return }
         
-        for (index,value) in values.enumerated() {
-
-
-            let button:UIButton = {
+        for (index,value) in values.enumerated()
+        {
+            let button:UIButton =
+            {
                let button = UIButton()
                 var leadingControl:NSLayoutAnchor<NSLayoutXAxisAnchor>?
                 button.translatesAutoresizingMaskIntoConstraints = false
@@ -59,6 +58,11 @@ public class FlatSegmented:UIControl{
                 button.contentVerticalAlignment = .center
                 button.setTitleColor(textColor, for: .normal)
                 
+                if let font = font
+                {
+                    button.titleLabel?.font = font
+                }
+                
                 button.tag = index
                 return button
             }()
@@ -67,10 +71,18 @@ public class FlatSegmented:UIControl{
             button.addTarget(self, action: #selector(buttonAction(sender:)), for: .touchUpInside)
 
         }
-        addUnderlineForFirstSegment()
+        if allowUnderline
+        {
+            addUnderlineForFirstSegment()
+        }
+        
+        //Set default button
+        let selectedButton = segments[defaultValue]
+        selectedButton.setTitleColor(selectedTextColor, for: .normal)
     }
     
-    func addUnderlineForFirstSegment()  {
+    func addUnderlineForFirstSegment()
+    {
         underline.removeFromSuperview()
         guard defaultValue <= values!.count else {
             return
@@ -94,24 +106,29 @@ public class FlatSegmented:UIControl{
         underline.heightAnchor.constraint(equalToConstant: underlineWeight).isActive = true
 
         underline.backgroundColor = underlineColor
-        
-        let selectedButton = segments[defaultValue]
-        selectedButton.setTitleColor(selectedTextColor, for: .normal)
+
         
     }
     
-    func changeUnderlinePosition(button:UIButton){
-        let x  = button.tag
+    func changeUnderlinePosition(button:UIButton)
+    {
         underlineHorizontalConstraint.isActive = false
-        underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: segments[x].leadingAnchor)
+        underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: button.leadingAnchor)
         underlineHorizontalConstraint.isActive = true
         
-        UIView.animate(withDuration: 0.1, animations: {
+        UIView.animate(withDuration: 0.1, animations:
+        {
             self.layoutIfNeeded()
         })
     }
     
-    @objc public func buttonAction(sender: UIButton) {
+    @objc public func buttonAction(sender: UIButton)
+    {
+        if allowUnderline
+        {
+            changeUnderlinePosition(button: sender)
+        }
+        
         changeUnderlinePosition(button: sender)
         selectedValue = sender.tag
         self.sendActions(for: .valueChanged)

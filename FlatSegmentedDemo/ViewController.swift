@@ -9,28 +9,30 @@
 import UIKit
 import FlatSegmented
 
-class ViewController: UIViewController {
+class ViewController: UIViewController
+{
     @IBOutlet weak var tabs: FlatSegmented!
-
-    override func viewDidLoad() {
+    
+    override func viewDidLoad()
+    {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
- 
-            
-            tabs.values = ["Items","info"]
-            tabs.textColor = UIColor.gray
-            tabs.selectedTextColor = UIColor.green
-            tabs.underlineColor = UIColor.green
-            tabs.underlineWeight = 2.0
-            tabs.makeSegment()
+        
+        
+        tabs.values = ["Items","info"]
+        tabs.textColor = UIColor.gray
+        tabs.selectedTextColor = UIColor.green
+        tabs.underlineColor = UIColor.green
+        tabs.underlineWeight = 2.0
+        tabs.addTarget(self, action: #selector(printTabs), for: .valueChanged)
+        tabs.makeSegment()
         
     }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    
+    func printTabs()
+    {
+        print(tabs.selectedValue)
     }
-
-
+    
 }
 
