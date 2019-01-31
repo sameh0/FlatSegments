@@ -1,0 +1,16 @@
+PODS:
+  - FlatSegmented (0.1.0)
+
+DEPENDENCIES:
+  - FlatSegmented (from `../`)
+
+EXTERNAL SOURCES:
+  FlatSegmented:
+    :path: "../"
+
+SPEC CHECKSUMS:
+  FlatSegmented: 9ba85bcd02ee0b44001caa80c341cce0dfe28dac
+
+PODFILE CHECKSUM: e48e0c24e93c8d059d04b9b9d253d7eae96bd585
+
+COCOAPODS: 1.5.3

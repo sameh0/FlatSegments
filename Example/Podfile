@@ -1,0 +1,6 @@
+use_frameworks!
+
+target 'FlatSegmented_Example' do
+  pod 'FlatSegmented', :path => '../'
+
+end
