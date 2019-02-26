@@ -23,7 +23,8 @@ class ViewController: UIViewController
         tabs.textColor = UIColor.gray
         tabs.selectedTextColor = UIColor.green
         tabs.underlineColor = UIColor.green
-        tabs.underlineWeight = 2.0
+        tabs.underlineWeight = 5.0
+        tabs.lineStyle = .circle
         tabs.addTarget(self, action: #selector(printTabs), for: .valueChanged)
         tabs.makeSegment()
         

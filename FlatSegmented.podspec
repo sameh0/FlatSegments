@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'FlatSegmented'
-  s.version          = '0.1.0'
+  s.version          = '1.0'
   s.summary          = 'Material Design segmented behavoir'
 
   s.homepage         = 'https://github.com/sameh0/FlatSegments'

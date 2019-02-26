@@ -9,6 +9,7 @@ import UIKit
 
 public class FlatSegmented:UIControl
 {
+    public enum LineStyle { case line,circle }
     public var selectedValue = 0
     public var defaultValue:Int = 0
     public var underlineWeight:CGFloat = 1
@@ -18,7 +19,8 @@ public class FlatSegmented:UIControl
     public var selectedTextColor:UIColor?
     public var font:UIFont?
     public var allowUnderline = true
-
+    public var lineStyle = LineStyle.line
+    
     var segments = [UIButton]()
     var underline = UIView()
     var underlineHorizontalConstraint = NSLayoutConstraint()
@@ -94,26 +96,39 @@ public class FlatSegmented:UIControl
         self.addSubview(underline)
 
         //Constraints
-        underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: segments[x].leadingAnchor)
+        if lineStyle == .line {
+            underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: segments[x].leadingAnchor)
+        } else
+            if lineStyle == .circle {
+            underlineHorizontalConstraint = underline.centerXAnchor.constraint(equalTo: segments[x].centerXAnchor)
+        }
         underlineHorizontalConstraint.isActive = true
         
         underline.bottomAnchor.constraint(equalTo: self.bottomAnchor).isActive = true
         
         let multiplier = CGFloat(1 / CGFloat(values!.count))
         
-        underline.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: multiplier).isActive = true
-
+        if lineStyle == .line {
+            underline.widthAnchor.constraint(equalTo: self.widthAnchor, multiplier: multiplier).isActive = true
+        } else if lineStyle == .circle {
+            underline.widthAnchor.constraint(equalToConstant: underlineWeight).isActive = true
+            underline.layer.cornerRadius  = underlineWeight / 2
+        }
         underline.heightAnchor.constraint(equalToConstant: underlineWeight).isActive = true
 
         underline.backgroundColor = underlineColor
-
+        
         
     }
     
     func changeUnderlinePosition(button:UIButton)
     {
         underlineHorizontalConstraint.isActive = false
-        underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: button.leadingAnchor)
+        if lineStyle == .line {
+            underlineHorizontalConstraint = underline.leadingAnchor.constraint(equalTo: button.leadingAnchor)
+        } else if lineStyle == .circle {
+            underlineHorizontalConstraint = underline.centerXAnchor.constraint(equalTo: button.centerXAnchor)
+        }
         underlineHorizontalConstraint.isActive = true
         
         UIView.animate(withDuration: 0.1, animations:
@@ -140,3 +155,4 @@ public class FlatSegmented:UIControl
     
     
 }
+
