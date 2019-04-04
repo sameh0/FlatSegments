@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = 'FlatSegmented'
-  s.version          = '1.0'
+  s.version          = '1.1'
   s.summary          = 'Material Design segmented behavoir'
 
   s.homepage         = 'https://github.com/sameh0/FlatSegments'
@@ -18,5 +18,5 @@ Pod::Spec.new do |s|
   s.ios.deployment_target = '9.0'
 
   s.source_files = 'Source/Classes/**/*'
-  s.swift_version = '3.0'
+  s.swift_version = '4.2'
 end
